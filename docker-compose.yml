@@ -1,0 +1,49 @@
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector
+    container_name: otel-collector
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317" # gRPC OTLP
+      - "4318:4318" # HTTP OTLP
+      - "55679:55679" # zPages (optional)
+    depends_on:
+      - jaeger
+    networks:
+      - otel-demo
+
+  jaeger:
+    image: jaegertracing/all-in-one
+    container_name: jaeger
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "14250:14250" # OTLP gRPC
+      - "9411:9411" # Zipkin
+    networks:
+      - otel-demo
+
+  service-a:
+    build: ./service-a
+    image: service-a
+    container_name: service-a
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./service-a/config.json:/app/config.json
+    depends_on:
+      - otel-collector
+    networks:
+      - otel-demo
+
+volumes:
+  consul-data:
+
+networks:
+  otel-demo:
+    driver: bridge
+    name: otel-demo
