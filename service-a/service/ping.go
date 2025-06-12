@@ -3,9 +3,10 @@ package service
 import (
 	"context"
 	"log"
+	"time"
+
 	"service-a/store"
 	"service-a/util/tracing"
-	"time"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
