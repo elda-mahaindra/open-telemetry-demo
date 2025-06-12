@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package="./pb";
+
+// B service definition
+service BService {
+  rpc Ping(PingRequest) returns (PingResponse) {}
+}
+
+message PingRequest { 
+  string ping_message = 1;
+}
+
+message PingResponse {
+  string pong_message = 1;
+}
+

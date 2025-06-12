@@ -40,6 +40,20 @@ services:
     networks:
       - otel-demo
 
+  service-b:
+    build: ./service-b
+    image: service-b
+    container_name: service-b
+    restart: unless-stopped
+    ports:
+      - "50051:50051"
+    volumes:
+      - ./service-b/config.json:/app/config.json
+    depends_on:
+      - otel-collector
+    networks:
+      - otel-demo
+
 volumes:
   consul-data:
 
