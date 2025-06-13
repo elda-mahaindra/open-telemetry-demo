@@ -118,7 +118,7 @@ make down
 3. **View traces in Jaeger:**
 
    - Open http://localhost:16686
-   - Select "demo-app" from the service dropdown
+   - Select "otel-demo-tracer" from the service dropdown
    - Click "Find Traces"
    - Explore the complete trace hierarchy across both services
 
@@ -161,7 +161,7 @@ Added to both `service-a/go.mod` and `service-b/go.mod`:
 
 - `InitTracer()` - Sets up OpenTelemetry with OTLP exporter
 - `GetTracer()` - Provides tracer instances for span creation
-- **Same service name** (`demo-app`) for unified traces
+- **Same service name** (`otel-demo-tracer`) for unified traces
 - Configured to send traces to OpenTelemetry Collector
 
 #### 2. service-a (HTTP → gRPC Client)
@@ -392,7 +392,7 @@ curl "http://localhost:4000/ping?message=error"
    - Check network connectivity between containers
    - Verify service-b is listening on port 50051
 
-3. **"demo-app not in dropdown"**
+3. **"otel-demo-tracer not in dropdown"**
 
    - Make a request first to generate traces
    - Wait 10-15 seconds for trace processing
