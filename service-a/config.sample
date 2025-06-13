@@ -2,7 +2,7 @@
   "app": {
     "name": "service-a",
     "host": "0.0.0.0",
-    "port": 4001,
+    "port": 4000,
     "register_address": "service-a",
     "health_check_address": "service-a"
   },

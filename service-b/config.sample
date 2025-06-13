@@ -1,10 +1,10 @@
 {
   "app": {
-    "name": "service-a",
+    "name": "service-b",
     "host": "0.0.0.0",
-    "port": 4001,
-    "register_address": "service-a",
-    "health_check_address": "service-a"
+    "port": 50051,
+    "register_address": "service-b",
+    "health_check_address": "service-b"
   },
   "otel_tracer": {
     "name": "otel-demo-tracer",
