@@ -8,7 +8,6 @@ import (
 
 	"service-a/api"
 	"service-a/service"
-	"service-a/store"
 	"service-a/util/config"
 	"service-a/util/tracing"
 )
@@ -37,11 +36,15 @@ func start() {
 		}
 	}()
 
-	// Init store layer
-	store := store.NewStore()
+	// Init service-b adapter
+	serviceBAdapter, err := createServiceBAdapter(config.ServiceB)
+	if err != nil {
+		log.Printf("failed to create service-b adapter: %v", err)
+		os.Exit(1)
+	}
 
 	// Init service layer
-	service := service.NewService(store)
+	service := service.NewService(serviceBAdapter)
 
 	// Init api layer
 	restApi := api.NewApi(config.App.Name, service)

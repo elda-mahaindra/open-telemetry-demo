@@ -9,6 +9,7 @@ import (
 // Config holds all configuration for the application
 type Config struct {
 	App           App           `mapstructure:"app"`
+	ServiceB      ServiceB      `mapstructure:"service_b"`
 	OpenTelemetry OpenTelemetry `mapstructure:"open_telemetry"`
 }
 

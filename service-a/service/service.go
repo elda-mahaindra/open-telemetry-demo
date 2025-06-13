@@ -1,15 +1,15 @@
 package service
 
 import (
-	"service-a/store"
+	"service-a/adapter/service_b_adapter"
 )
 
 type Service struct {
-	store *store.Store
+	serviceBAdapter *service_b_adapter.Adapter
 }
 
-func NewService(store *store.Store) *Service {
+func NewService(serviceBAdapter *service_b_adapter.Adapter) *Service {
 	return &Service{
-		store: store,
+		serviceBAdapter: serviceBAdapter,
 	}
 }

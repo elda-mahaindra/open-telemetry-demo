@@ -10,6 +10,14 @@ type App struct {
 	HealthCheckAddress string `mapstructure:"health_check_address"` // Address for Consul health checks
 }
 
+// Service B config
+
+type ServiceB struct {
+	Name string `mapstructure:"name"`
+	Host string `mapstructure:"host"`
+	Port int    `mapstructure:"port"`
+}
+
 // Open telemetry config
 
 type OpenTelemetry struct {

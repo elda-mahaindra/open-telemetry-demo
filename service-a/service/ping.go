@@ -5,7 +5,6 @@ import (
 	"log"
 	"time"
 
-	"service-a/store"
 	"service-a/util/tracing"
 
 	"go.opentelemetry.io/otel/attribute"
@@ -37,11 +36,7 @@ func (s *Service) Ping(ctx context.Context, param *PingParam) (*PingResult, erro
 	// Simulate a service operation
 	time.Sleep(500 * time.Millisecond)
 
-	arg := &store.PingArg{
-		PingMessage: param.PingMessage,
-	}
-
-	data, err := s.store.Ping(ctx, arg)
+	data, err := s.serviceBAdapter.Ping(ctx, param.PingMessage)
 	if err != nil {
 		// Record the error in the span
 		span.RecordError(err)
