@@ -24,7 +24,7 @@ func runRestServer(port int, api *api.Api) {
 	app.Use(cors.New(corsConfig))
 
 	// Endpoint definitions
-	app = api.DefineEndpoints(app)
+	app = api.SetupRoutes(app)
 
 	// start the server
 	err := app.Listen(fmt.Sprintf(":%d", port))

@@ -10,6 +10,7 @@ import (
 	"service-b/api/pb"
 
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.opentelemetry.io/otel/propagation"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -17,7 +18,9 @@ import (
 func runGrpcServer(port int, server *api.Api) *grpc.Server {
 	// Create new gRPC server
 	opts := []grpc.ServerOption{
-		grpc.StatsHandler(otelgrpc.NewServerHandler()),
+		grpc.StatsHandler(otelgrpc.NewServerHandler(
+			otelgrpc.WithPropagators(propagation.TraceContext{}),
+		)),
 	}
 	grpcServer := grpc.NewServer(opts...)
 

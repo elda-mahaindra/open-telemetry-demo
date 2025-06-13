@@ -3,6 +3,7 @@ module service-b
 go 1.23.0
 
 require (
+	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.20.1
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.54.0
 	go.opentelemetry.io/otel v1.36.0

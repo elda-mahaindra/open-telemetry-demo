@@ -2,16 +2,17 @@ package service
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"time"
 
-	"service-a/util/tracing"
+	"service-a/util/logging"
 
+	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 )
 
-type PingParam struct {
+type PingParams struct {
 	PingMessage string `json:"ping_message"`
 }
 
@@ -19,28 +20,47 @@ type PingResult struct {
 	PongMessage string `json:"pong_message"`
 }
 
-func (s *Service) Ping(ctx context.Context, param *PingParam) (*PingResult, error) {
-	log.Println("Service.Ping")
+func (service *Service) Ping(ctx context.Context, params *PingParams) (*PingResult, error) {
+	const op = "service.Service.Ping"
 
-	// Start a new span for the service operation
-	tracer := tracing.GetTracer("service-a-service")
-	ctx, span := tracer.Start(ctx, "service.ping")
+	// Start span
+	ctx, span := service.tracer.Start(ctx, op)
 	defer span.End()
+
+	span.SetAttributes(
+		attribute.String("service.operation", "ping"),
+		attribute.String("service.input.params", fmt.Sprintf("%+v", params)),
+	)
+
+	// Get logger with trace id
+	logger := logging.LogWithTrace(ctx, service.logger)
+
+	logger.WithFields(logrus.Fields{
+		"[op]":   op,
+		"params": params,
+	}).Info()
 
 	// Add attributes to the span
 	span.SetAttributes(
 		attribute.String("service.operation", "ping"),
-		attribute.String("service.input.message", param.PingMessage),
+		attribute.String("service.input.message", params.PingMessage),
 	)
 
 	// Simulate a service operation
 	time.Sleep(500 * time.Millisecond)
 
-	data, err := s.serviceBAdapter.Ping(ctx, param.PingMessage)
+	data, err := service.serviceBAdapter.Ping(ctx, params.PingMessage)
 	if err != nil {
+		logger.WithFields(logrus.Fields{
+			"[op]":   op,
+			"params": params,
+			"error":  err,
+		}).Error()
+
 		// Record the error in the span
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
+
 		return nil, err
 	}
 
@@ -50,7 +70,7 @@ func (s *Service) Ping(ctx context.Context, param *PingParam) (*PingResult, erro
 
 	// Record success attributes
 	span.SetAttributes(
-		attribute.String("service.output.message", result.PongMessage),
+		attribute.String("service.output.result", fmt.Sprintf("%+v", result)),
 	)
 	span.SetStatus(codes.Ok, "service operation completed successfully")
 

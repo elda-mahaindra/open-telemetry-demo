@@ -3,28 +3,57 @@ package service_b_adapter
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"service-a/adapter/service_b_adapter/pb"
+	"service-a/util/logging"
+
+	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 func (client *Adapter) Ping(ctx context.Context, message string) (*pb.PingResponse, error) {
-	log.Println("Adapter.Ping")
+	const op = "service_b_adapter.Adapter.Ping"
+
+	// Start span
+	ctx, span := client.tracer.Start(ctx, op)
+	defer span.End()
+
+	span.SetAttributes(
+		attribute.String("service_b_adapter.operation", "ping"),
+		attribute.String("service_b_adapter.input.message", message),
+	)
+
+	// Get logger with trace id
+	logger := logging.LogWithTrace(ctx, client.logger)
 
 	request := &pb.PingRequest{
 		PingMessage: message,
 	}
 
-	log.Printf("Sending request to service-b: %v\n", request)
+	logger.WithFields(logrus.Fields{
+		"[op]":    op,
+		"request": request,
+		"type":    fmt.Sprintf("%T", request),
+	}).Info()
 
+	// Call service B
 	response, err := client.serviceBClient.Ping(ctx, request)
 	if err != nil {
-		log.Printf("Error sending request to service-b: %v\n", err)
+		logger.WithFields(logrus.Fields{
+			"[op]":    op,
+			"request": request,
+			"type":    fmt.Sprintf("%T", request),
+			"error":   err.Error(),
+		}).Error()
 
 		return nil, fmt.Errorf("error sending request: %w", err)
 	}
 
-	log.Printf("Received response from service-b: %v\n", response)
+	logger.WithFields(logrus.Fields{
+		"[op]":     op,
+		"response": response,
+		"type":     fmt.Sprintf("%T", response),
+	}).Info()
 
 	return response, nil
 }

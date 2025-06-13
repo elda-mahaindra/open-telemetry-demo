@@ -2,40 +2,47 @@ package api
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"time"
 
 	"service-b/api/pb"
 	"service-b/service"
-	"service-b/util/tracing"
+	"service-b/util/logging"
 
+	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 )
 
 func (api *Api) Ping(ctx context.Context, request *pb.PingRequest) (*pb.PingResponse, error) {
-	log.Println("Api.Ping")
+	const op = "api.Api.Ping"
 
-	// Start a new span for the API request
-	tracer := tracing.GetTracer("service-a-api")
-	ctx, span := tracer.Start(ctx, "api.ping")
+	// Start span
+	ctx, span := api.tracer.Start(ctx, op)
 	defer span.End()
+
+	// Get logger with trace id
+	logger := logging.LogWithTrace(ctx, api.logger)
+
+	logger.WithFields(logrus.Fields{
+		"[op]":    op,
+		"request": request,
+	}).Info()
 
 	// Add attributes to the span
 	span.SetAttributes(
-		attribute.String("api.endpoint", "/ping"),
-		attribute.String("api.method", "GET"),
-		attribute.String("ping.message", request.GetPingMessage()),
+		attribute.String("api.operation", "ping"),
+		attribute.String("api.input.request", fmt.Sprintf("%+v", request)),
 	)
 
 	// Simulate a validation operation
 	time.Sleep(250 * time.Millisecond)
 
-	param := &service.PingParam{
+	params := &service.PingParams{
 		PingMessage: request.GetPingMessage(),
 	}
 
-	result, err := api.service.Ping(ctx, param)
+	result, err := api.service.Ping(ctx, params)
 	if err != nil {
 		// Record the error in the span
 		span.RecordError(err)
@@ -44,13 +51,15 @@ func (api *Api) Ping(ctx context.Context, request *pb.PingRequest) (*pb.PingResp
 		return nil, err
 	}
 
+	response := &pb.PingResponse{
+		PongMessage: result.PongMessage,
+	}
+
 	// Record success attributes
 	span.SetAttributes(
-		attribute.String("response.pong_message", result.PongMessage),
+		attribute.String("api.output.response", fmt.Sprintf("%+v", response)),
 	)
 	span.SetStatus(codes.Ok, "request completed successfully")
 
-	return &pb.PingResponse{
-		PongMessage: result.PongMessage,
-	}, nil
+	return response, nil
 }

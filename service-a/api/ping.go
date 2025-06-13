@@ -1,42 +1,48 @@
 package api
 
 import (
-	"log"
+	"fmt"
 	"time"
 
 	"service-a/service"
-	"service-a/util/tracing"
+	"service-a/util/logging"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 )
 
 func (api *Api) Ping(c *fiber.Ctx) error {
-	log.Println("Api.Ping")
+	const op = "api.Api.Ping"
 
-	// Start a new span for the API request
-	tracer := tracing.GetTracer("service-a-api")
-	ctx, span := tracer.Start(c.Context(), "api.ping")
+	// Start span
+	ctx, span := api.tracer.Start(c.Context(), op)
 	defer span.End()
 
-	message := c.Query("message")
-
-	// Add attributes to the span
 	span.SetAttributes(
 		attribute.String("api.endpoint", "/ping"),
 		attribute.String("api.method", "GET"),
-		attribute.String("ping.message", message),
 	)
+
+	// Get logger with trace id
+	logger := logging.LogWithTrace(ctx, api.logger)
+
+	message := c.Query("message")
 
 	// Simulate a validation operation
 	time.Sleep(250 * time.Millisecond)
 
-	param := &service.PingParam{
+	params := &service.PingParams{
 		PingMessage: message,
 	}
 
-	result, err := api.service.Ping(ctx, param)
+	logger.WithFields(logrus.Fields{
+		"[op]":   op,
+		"params": fmt.Sprintf("%+v", params),
+	}).Info()
+
+	result, err := api.service.Ping(ctx, params)
 	if err != nil {
 		// Record the error in the span
 		span.RecordError(err)
@@ -49,7 +55,7 @@ func (api *Api) Ping(c *fiber.Ctx) error {
 
 	// Record success attributes
 	span.SetAttributes(
-		attribute.String("response.pong_message", result.PongMessage),
+		attribute.String("api.output.result", fmt.Sprintf("%+v", result)),
 	)
 	span.SetStatus(codes.Ok, "request completed successfully")
 

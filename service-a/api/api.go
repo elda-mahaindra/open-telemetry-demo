@@ -5,22 +5,31 @@ import (
 	"service-a/service"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type Api struct {
-	serviceName string
+	logger *logrus.Logger
+	tracer trace.Tracer
 
 	service *service.Service
 }
 
-func NewApi(serviceName string, service *service.Service) *Api {
+func NewApi(
+	logger *logrus.Logger,
+	tracer trace.Tracer,
+	service *service.Service,
+) *Api {
 	return &Api{
-		serviceName: serviceName,
-		service:     service,
+		logger: logger,
+		tracer: tracer,
+
+		service: service,
 	}
 }
 
-func (api *Api) DefineEndpoints(app *fiber.App) *fiber.App {
+func (api *Api) SetupRoutes(app *fiber.App) *fiber.App {
 	// Error handler middleware
 	app.Use(middleware.ErrorHandler())
 

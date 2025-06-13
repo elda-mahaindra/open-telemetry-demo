@@ -18,9 +18,9 @@ type ServiceB struct {
 	Port int    `mapstructure:"port"`
 }
 
-// Open telemetry config
+// Otel tracer config
 
-type OpenTelemetry struct {
-	TracerName   string `mapstructure:"tracer_name"`
-	CollectorURL string `mapstructure:"collector_url"`
+type OtelTracer struct {
+	Name     string `mapstructure:"name"`
+	Endpoint string `mapstructure:"endpoint"`
 }

@@ -4,6 +4,7 @@ go 1.23.0
 
 require (
 	github.com/gofiber/fiber/v2 v2.52.8
+	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.20.1
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.54.0
 	go.opentelemetry.io/otel v1.33.0

@@ -6,8 +6,8 @@
     "register_address": "service-a",
     "health_check_address": "service-a"
   },
-  "open_telemetry": {
-    "tracer_name": "service-a-tracer",
-    "collector_url": "otel-collector:4317"
+  "otel_tracer": {
+    "name": "otel-demo-tracer",
+    "endpoint": "otel-collector:4317"
   }
 }

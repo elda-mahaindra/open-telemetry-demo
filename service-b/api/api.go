@@ -3,19 +3,29 @@ package api
 import (
 	"service-b/api/pb"
 	"service-b/service"
+
+	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type Api struct {
 	pb.UnimplementedBServiceServer
 
-	serviceName string
+	logger *logrus.Logger
+	tracer trace.Tracer
 
 	service *service.Service
 }
 
-func NewApi(serviceName string, service *service.Service) *Api {
+func NewApi(
+	logger *logrus.Logger,
+	tracer trace.Tracer,
+	service *service.Service,
+) *Api {
 	return &Api{
-		serviceName: serviceName,
-		service:     service,
+		logger: logger,
+		tracer: tracer,
+
+		service: service,
 	}
 }

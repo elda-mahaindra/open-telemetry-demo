@@ -8,8 +8,8 @@ import (
 
 // Config holds all configuration for the application
 type Config struct {
-	App           App           `mapstructure:"app"`
-	OpenTelemetry OpenTelemetry `mapstructure:"open_telemetry"`
+	App        App        `mapstructure:"app"`
+	OtelTracer OtelTracer `mapstructure:"otel_tracer"`
 }
 
 // LoadConfig reads configuration from file or environment variables.
