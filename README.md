@@ -50,14 +50,58 @@ This project demonstrates how to implement **distributed tracing** with **OpenTe
 - ✅ **gRPC Instrumentation**: Automatic trace propagation with OpenTelemetry gRPC interceptors
 - ✅ **Jaeger Integration**: Beautiful trace visualization UI showing complete request journey
 
+## Developer Experience
+
+### Simple Makefile Commands
+
+```bash
+make up    # Start all services
+make down  # Stop all services
+make help  # Show available commands
+```
+
+### Testing with Postman
+
+A Postman collection is available in `docs/postman/OpenTelemetry-Demo.postman_collection.json` with pre-configured requests:
+
+- **Basic Ping** - Normal request flow through both services
+- **Test Error Handling** - Triggers errors to test error tracing
+- **Special Characters Test** - Tests with special characters and spaces
+- **Load Test Request** - Uses random numbers for unique traces
+
+Import the collection into Postman to easily test different scenarios and observe the traces in Jaeger UI.
+
 ## Quick Start
 
 ### Prerequisites
 
 - Docker & Docker Compose
 - Go 1.23+ (for local development)
+- `make` (for using the Makefile commands)
 
-### Running the Demo
+### Initial Setup
+
+Before running the services, you need to create configuration files:
+
+```bash
+# Copy sample configs to create actual config files
+cp service-a/config.sample service-a/config.json
+cp service-b/config.sample service-b/config.json
+```
+
+**Note:** The sample configs are already properly configured for the demo environment, so no changes are needed.
+
+### Using Makefile (Recommended)
+
+```bash
+# Start all services
+make up
+
+# Stop all services
+make down
+```
+
+### Using Docker Compose
 
 1. **Start all services:**
 
@@ -72,10 +116,17 @@ This project demonstrates how to implement **distributed tracing** with **OpenTe
    ```
 
 3. **View traces in Jaeger:**
+
    - Open http://localhost:16686
    - Select "demo-app" from the service dropdown
    - Click "Find Traces"
    - Explore the complete trace hierarchy across both services
+
+4. **Stop services:**
+
+   ```bash
+   docker compose down
+   ```
 
 ### Test Different Scenarios
 
@@ -89,6 +140,8 @@ curl "http://localhost:4000/ping?message=error"
 # Test with special characters
 curl "http://localhost:4000/ping?message=special%20test"
 ```
+
+**💡 Tip:** Use the Postman collection in `docs/postman/` for easier testing!
 
 ## OpenTelemetry Implementation
 
