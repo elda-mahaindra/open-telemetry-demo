@@ -40,12 +40,6 @@ func (service *Service) Ping(ctx context.Context, params *PingParams) (*PingResu
 		"params": params,
 	}).Info()
 
-	// Add attributes to the span
-	span.SetAttributes(
-		attribute.String("service.operation", "ping"),
-		attribute.String("service.input.message", params.PingMessage),
-	)
-
 	// Simulate a service operation
 	time.Sleep(500 * time.Millisecond)
 
