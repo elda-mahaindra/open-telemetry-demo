@@ -62,12 +62,7 @@ make help  # Show available commands
 
 ### Testing with Postman
 
-A Postman collection is available in `docs/postman/OpenTelemetry-Demo.postman_collection.json` with pre-configured requests:
-
-- **Basic Ping** - Normal request flow through both services
-- **Test Error Handling** - Triggers errors to test error tracing
-- **Special Characters Test** - Tests with special characters and spaces
-- **Load Test Request** - Uses random numbers for unique traces
+A Postman collection is available in `docs/postman/open-telemetry-demo.postman_collection.json`.
 
 Import the collection into Postman to easily test different scenarios and observe the traces in Jaeger UI.
 
